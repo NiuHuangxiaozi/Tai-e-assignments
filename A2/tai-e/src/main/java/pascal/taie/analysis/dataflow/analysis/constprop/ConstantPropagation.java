@@ -85,7 +85,13 @@ public class ConstantPropagation extends
                     target.update(var, value);
                 if (target_value.isConstant()) {
                     int targetConstant = target_value.getConstant();
-                    if (targetConstant != value.getConstant())
+                    // value 是NAC
+                    if (value.isNAC()){
+                        target.update(var, Value.getNAC());
+                    }
+                    // value 是under 则target_value是常量不用动
+                    // value是常量，那么相应不用更新，不相同则更新为NAC
+                    else if (targetConstant != value.getConstant())
                         target.update(var, Value.getNAC());
 
                 }
@@ -129,10 +135,13 @@ public class ConstantPropagation extends
                     else if (rvalue instanceof InvokeExp) {
                             gen.update(def_var,Value.getNAC());
                     }
+                    else if (rvalue instanceof FieldAccess) {
+                        gen.update(def_var,Value.getNAC());
+                    }
                     //右值是一个变量
                     else if (rvalue instanceof Var var) {
-                            Value temp = in.get(var);
-                            gen.update(def_var,temp);
+                        Value temp = in.get(var);
+                        gen.update(def_var,temp);
                     }
                     //右值是二元表达式
                     else if (rvalue instanceof BinaryExp bexp) {
@@ -143,7 +152,6 @@ public class ConstantPropagation extends
                     else {
                         gen.update(def_var, Value.getNAC());
                     }
-
                     gen.copyFrom(in);
                     // 更新out
                     return out.copyFrom(gen);
@@ -278,10 +286,16 @@ public class ConstantPropagation extends
                     }
                     return Value.makeConstant(number);
                 }
+                return Value.getUndef();
             }
-        // NAC / 0
-        else if(rightValue.isConstant() && rightValue.getConstant()==0){
-            return Value.getUndef();
+        // NAC / 0  NAC % 0
+        else if(leftValue.isNAC() && rightValue.isConstant() && rightValue.getConstant()==0){
+            if(op == ArithmeticExp.Op.DIV || op == ArithmeticExp.Op.REM){
+                return Value.getUndef();
+            }
+            else{
+                return Value.getNAC();
+            }
         }
         // if val(y) or val(z) is NAC
         else if (leftValue.isNAC() || rightValue.isNAC()) {
@@ -290,6 +304,6 @@ public class ConstantPropagation extends
         else{
             return Value.getUndef();
         }
-        return Value.getUndef();
+        //return Value.getUndef();
     }
 }
