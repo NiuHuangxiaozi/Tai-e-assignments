@@ -37,17 +37,20 @@ import java.util.stream.Stream;
  * Intermediate representation for method body of non-abstract methods.
  * Each IR contains the variables and statements defined in a method.
  */
+// This defines an interface called IR ,inherit from another interfaces Iterable<Stmt> and  ResultHolder
 public interface IR extends Iterable<Stmt>, ResultHolder {
 
     /**
      * @return the method that defines the content of this IR.
      */
+    //  get the information of the method, this IR is for this method
     JMethod getMethod();
 
     /**
      * @return the "this" variable in this IR.
      * If the method is static, then returns null.
      */
+    // get this
     @Nullable Var getThis();
 
     /**
@@ -55,32 +58,39 @@ public interface IR extends Iterable<Stmt>, ResultHolder {
      * The order of the parameters in the resulting list is the same as
      * the order they are declared in the method.
      */
+    // the defined vars in this class. method is a function
     List<Var> getParams();
 
     /**
      * @return the i-th parameter in this IR. The indexes start from 0.
      */
+    // parameter search using index
     Var getParam(int i);
 
     /**
      * @return all returned variables. If the method return type is void,
      * then returns empty list.
      */
+
+    // get the return value using this function
     List<Var> getReturnVars();
 
     /**
      * @return the i-th {@link Var} in this IR. The indexes start from 0.
      */
+    // this method define many vars. It may be a list that visit using index
     Var getVar(int i);
 
     /**
      * @return the variables in this IR.
      */
+    // yes ,it is a list of vars
     List<Var> getVars();
 
     /**
      * @return the i-th {@link Stmt} in this IR. The indexes start from 0.
      */
+    // the same interpretation about Var
     Stmt getStmt(int i);
 
     /**

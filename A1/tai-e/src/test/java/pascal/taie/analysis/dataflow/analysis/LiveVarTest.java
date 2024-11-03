@@ -61,4 +61,10 @@ public class LiveVarTest {
     public void Reference() {
         testLV("Reference");
     }
+
+
+    @Test
+    public void TestOneLine() {
+        testLV("OneLine");
+    }
 }

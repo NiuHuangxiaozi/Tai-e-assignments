@@ -41,6 +41,7 @@ import java.util.List;
  * Representation of method/constructor parameters, lambda parameters,
  * exception parameters, and local variables.
  */
+
 public class Var implements LValue, RValue, Indexable {
 
     /**
@@ -61,12 +62,16 @@ public class Var implements LValue, RValue, Indexable {
     /**
      * The index of this variable in {@link #method}.
      */
+    // every method has a list of variable
     private final int index;
 
     /**
      * If this variable is a temporary variable generated to hold a constant value,
      * then this field holds that constant value; otherwise, this field is null.
+     * temp = 4
+     * a = temp+2 temp is temporary variable and Literal is 4
      */
+
     private final Literal constValue;
 
     /**
@@ -115,6 +120,7 @@ public class Var implements LValue, RValue, Indexable {
      * @return true if this variable is a temporary variable for holding
      * constant value, otherwise false.
      */
+    //这个是不是临时变量
     public boolean isTempConst() {
         return constValue != null;
     }
@@ -123,6 +129,7 @@ public class Var implements LValue, RValue, Indexable {
      * @return the constant value held by this temporary variable.
      * @throws AnalysisException if this variable is not temporary variable
      */
+    // 获得这个临时变量存储的值，如果它不是临时的变量会报错
     public Literal getTempConstValue() {
         if (!isTempConst()) {
             throw new AnalysisException(this + " is not a temporary variable" +
@@ -131,6 +138,7 @@ public class Var implements LValue, RValue, Indexable {
         return constValue;
     }
 
+    // 访问者模式的设置，设置<T>泛型模板，不用改变里面的数据结构就能自由的处理数据
     @Override
     public <T> T accept(ExpVisitor<T> visitor) {
         return visitor.visit(this);
@@ -209,6 +217,10 @@ public class Var implements LValue, RValue, Indexable {
      * only need to hold one reference to the empty {@link RelevantStmts},
      * instead of several references to empty lists.
      */
+
+    //这是一个java的内部静态类,为外面的Var类型提供一些辅助的功能
+    // 这个类只能被Var类型访问,但是不能被Var类型之外的类进行访问
+    // 好处是这个可以不用干扰Var的变量定义啥的,只为Var类型服务
     private static class RelevantStmts {
 
         private static final RelevantStmts EMPTY = new RelevantStmts();

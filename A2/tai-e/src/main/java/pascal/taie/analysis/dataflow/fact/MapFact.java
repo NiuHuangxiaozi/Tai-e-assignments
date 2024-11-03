@@ -67,6 +67,7 @@ public class MapFact<K, V> {
      *
      * @return if the update changes this fact.
      */
+    // 如果这个fact发生了变化就返回true
     public boolean update(K key, V value) {
         return !Objects.equals(map.put(key, value), value);
     }
@@ -77,6 +78,7 @@ public class MapFact<K, V> {
      * @return the previous value associated with key,
      * or null if there was no mapping for key.
      */
+
     public V remove(K key) {
         return map.remove(key);
     }

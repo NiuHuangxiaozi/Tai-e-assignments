@@ -26,6 +26,10 @@ import pascal.taie.analysis.dataflow.analysis.DataflowAnalysis;
 import pascal.taie.analysis.dataflow.fact.DataflowResult;
 import pascal.taie.analysis.graph.cfg.CFG;
 
+//nju wsj begin
+import pascal.taie.analysis.dataflow.fact.SetFact.*;
+
+//nju wsj end
 /**
  * Base class for data-flow analysis solver, which provides common
  * functionalities for different solver implementations.
@@ -33,6 +37,8 @@ import pascal.taie.analysis.graph.cfg.CFG;
  * @param <Node> type of CFG nodes
  * @param <Fact> type of data-flow facts
  */
+
+//分析类的启动器
 public abstract class Solver<Node, Fact> {
 
     protected final DataflowAnalysis<Node, Fact> analysis;
@@ -66,6 +72,7 @@ public abstract class Solver<Node, Fact> {
      *
      * @return the initialized data-flow result
      */
+//    这个是进行初始化的，感觉就是初始为全0或者全1，课上讲的
     private DataflowResult<Node, Fact> initialize(CFG<Node> cfg) {
         DataflowResult<Node, Fact> result = new DataflowResult<>();
         if (analysis.isForward()) {
@@ -82,6 +89,17 @@ public abstract class Solver<Node, Fact> {
 
     protected void initializeBackward(CFG<Node> cfg, DataflowResult<Node, Fact> result) {
         // TODO - finish me
+
+
+        result.setInFact(cfg.getExit(),this.analysis.newBoundaryFact(cfg));
+        result.setOutFact(cfg.getExit(),this.analysis.newBoundaryFact(cfg));
+
+        for (Node node : cfg){
+            if(node != cfg.getExit()){
+                result.setInFact(node,this.analysis.newInitialFact());
+                result.setOutFact(node,this.analysis.newInitialFact());
+            }
+        }
     }
 
     /**

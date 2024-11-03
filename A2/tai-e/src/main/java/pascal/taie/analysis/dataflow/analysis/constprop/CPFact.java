@@ -38,6 +38,8 @@ import java.util.Map;
  * moreover, if we set the lattice value of a variable to UNDEF,
  * it effectively removes the variable from the CPFact.
  */
+
+//什么是Var，什么是Value？a = 3 a就是Var， 3就是值
 public class CPFact extends MapFact<Var, Value> {
 
     public CPFact() {

@@ -32,6 +32,7 @@ public class IntLiteral implements IntegerLiteral {
     /**
      * Cache frequently used literals for saving space.
      */
+    // 这里设计这个cache就是为了缓存很多常用的字面变量，这样它们多个变量就可以指向同一个字面常量对象，节省内存空间
     private static final IntLiteral[] cache = new IntLiteral[-(-128) + 127 + 1];
 
     static {
@@ -43,12 +44,15 @@ public class IntLiteral implements IntegerLiteral {
     /**
      * The value of the literal.
      */
+    // 常量的值
     private final int value;
 
+    // 构造函数设置为private,那么就像单例模式,构造函数设置为private,应该会提供供外部访问的API
     private IntLiteral(int value) {
         this.value = value;
     }
 
+    // 下面的就是所谓的外部访问API，用于获取IntLiteral的实例对象
     public static IntLiteral get(int value) {
         final int offset = 128;
         if (value >= -128 && value <= 127) { // will cache

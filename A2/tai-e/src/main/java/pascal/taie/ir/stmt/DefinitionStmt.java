@@ -41,6 +41,7 @@ public abstract class DefinitionStmt<L extends LValue, R extends RValue>
      * which does not have a left-hand side expression, e.g., o.m(...), then
      * this method returns null; otherwise, it must return a non-null value.
      */
+    // 这是一个抽象方法，左值可能是空的
     public abstract @Nullable L getLValue();
 
     /**

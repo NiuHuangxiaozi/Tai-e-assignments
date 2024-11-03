@@ -25,6 +25,7 @@ package pascal.taie.ir.exp;
 /**
  * Representation of binary expression.
  */
+//这里定义了二元操作符类型,是一个继承了右值表达式的接口
 public interface BinaryExp extends RValue {
 
     /**

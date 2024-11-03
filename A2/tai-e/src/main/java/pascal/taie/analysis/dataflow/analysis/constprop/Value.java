@@ -45,6 +45,10 @@ public class Value {
      */
     private static final Value[] cache = new Value[-(-128) + 127 + 1];
 
+    /*
+        cache 数组在 Java 中的索引是从 0 开始的，但我们希望缓存 -128 到 127 之间的整数。
+        因此，数组的第一个元素（cache[0]）就代表 Value(-128)，而最后一个元素（cache[255]）代表 Value(127)。
+     */
     static {
         for (int i = 0; i < cache.length; i++) {
             cache[i] = new Value(i - 128);
