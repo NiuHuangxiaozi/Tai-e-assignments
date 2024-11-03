@@ -118,17 +118,32 @@ public class ConstantPropagation extends
                     // gen
                     CPFact gen = new CPFact();
                     RValue rvalue = defStmt.getRValue();
+
                     // 分情况讨论
 
+                    // 右值是常量
                     if (rvalue instanceof IntLiteral intliteral) {
                             gen.update(def_var, Value.makeConstant(intliteral.getValue()));
-                    } else if (rvalue instanceof InvokeExp) {
-                            gen.update(def_var,Value.getNAC());
-                    } else {
-                        Value value = evaluate(rvalue, inCopy);
-                        if (!value.equals(Value.getUndef()))
-                            gen.update(def_var, value);
                     }
+                    //右值是函数调用
+                    else if (rvalue instanceof InvokeExp) {
+                            gen.update(def_var,Value.getNAC());
+                    }
+                    //右值是一个变量
+                    else if (rvalue instanceof Var var) {
+                            Value temp = in.get(var);
+                            gen.update(def_var,temp);
+                    }
+                    //右值是二元表达式
+                    else if (rvalue instanceof BinaryExp bexp) {
+                        Value value = evaluate(bexp, inCopy);
+                        gen.update(def_var, value);
+                    }
+                    //其他任何情况，safe估计为NAC
+                    else {
+                        gen.update(def_var, Value.getNAC());
+                    }
+
                     gen.copyFrom(in);
                     // 更新out
                     return out.copyFrom(gen);
@@ -165,19 +180,16 @@ public class ConstantPropagation extends
      */
     public static Value evaluate(Exp exp, CPFact in) {
         // TODO - finish me
-        if(exp instanceof Var var){
-                return in.get(var);
-        }
-        else if(exp instanceof BinaryExp bexp){
-            //f(y,z)
-            BinaryExp.Op op= bexp.getOperator();
-            Var left = bexp.getOperand1();
-            Var right = bexp.getOperand2();
+        BinaryExp bexp = (BinaryExp) exp;
+        BinaryExp.Op op= bexp.getOperator();
+        Var left = bexp.getOperand1();
+        Var right = bexp.getOperand2();
 
-            Value leftValue = in.get(left);
-            Value rightValue = in.get(right);
-            
-            if(leftValue.isConstant() && rightValue.isConstant()){
+        Value leftValue = in.get(left);
+        Value rightValue = in.get(right);
+
+        // if val(y) and val(z) are constants
+        if(leftValue.isConstant() && rightValue.isConstant()){
                 int leftNumber = leftValue.getConstant();
                 int rightNumber = rightValue.getConstant();
 
@@ -237,7 +249,7 @@ public class ConstantPropagation extends
                     return Value.makeConstant(number);
                 }
 
-                // ShifT << >> >>>
+                // Shift << >> >>>
                 if(op instanceof ShiftExp.Op){
                     int number = -1;
                     if (op == ShiftExp.Op.SHL){
@@ -267,15 +279,16 @@ public class ConstantPropagation extends
                     return Value.makeConstant(number);
                 }
             }
-            else if(rightValue.isConstant() && rightValue.getConstant()==0){
-                return Value.getUndef();
-            }
-            else if (leftValue.isNAC() || rightValue.isNAC()) {
-                return Value.getNAC();
-            }
-            else{
-                return Value.getUndef();
-            }
+        // NAC / 0
+        else if(rightValue.isConstant() && rightValue.getConstant()==0){
+            return Value.getUndef();
+        }
+        // if val(y) or val(z) is NAC
+        else if (leftValue.isNAC() || rightValue.isNAC()) {
+            return Value.getNAC();
+        }
+        else{
+            return Value.getUndef();
         }
         return Value.getUndef();
     }
