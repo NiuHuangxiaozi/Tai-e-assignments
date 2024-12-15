@@ -71,4 +71,8 @@ public interface InterDataflowAnalysis<Node, Fact> {
      * @return the result of edge transfer function.
      */
     Fact transferEdge(ICFGEdge<Node> edge, Fact out);
+
+
+    // add by myself
+
 }
